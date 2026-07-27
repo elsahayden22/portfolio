@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elsa — Copywriting &amp; Storytelling</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+  /* ============================================================
+     EDITING GUIDE FOR ELSA
+     - All project content lives in the PROJECTS array near the
+       top of the <script> block at the bottom of this file.
+     - For each project, set "url" to the real link, and swap the
+       "icon" placeholder for a real thumbnail by editing the
+       renderCard() function (marked with a comment).
+     - Category colors, copy, and cabinet labels are all editable
+       in the same PROJECTS/CATEGORIES objects.
+     ============================================================ */
+
+  :root{
+    --wood-light:#7a4f37;
+    --wood-dark:#432a1c;
+    --cream:#efe6d3;
+    --cream-dim:#e4d8bf;
+    --ink:#26201a;
+    --brass:#b3915a;
+    --oxblood:#8c3b34;
+    --sage:#6f7b57;
+    --gold:#876725;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--wood-dark);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+  }
+
+  a{color:inherit;}
+
+  /* ---------- layout shell ---------- */
+  .view{
+    display:none;
+    min-height:100vh;
+    width:100%;
+  }
+  .view.active{display:block;}
+
+  /* ============================================================
+     HOME VIEW — the cabinet
+     ============================================================ */
+  #view-home{
+    background:
+      radial-gradient(120% 90% at 50% -10%, rgba(255,255,255,0.05), transparent 60%),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 3px, rgba(0,0,0,0.03) 3px, rgba(0,0,0,0.03) 7px),
+      linear-gradient(180deg, var(--wood-dark), #35210f 80%);
+    padding:64px 24px 96px;
+  }
+
+  .intro{
+    max-width:640px;
+    margin:0 auto 56px;
+    text-align:center;
+    color:var(--cream);
+  }
+  .intro .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--brass);
+    margin-bottom:14px;
+  }
+  .intro h1{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:clamp(34px,6vw,54px);
+    line-height:1.05;
+    margin:0 0 18px;
+    color:#f7f1e3;
+  }
+  .intro h1 em{
+    font-style:italic;
+    font-weight:400;
+    color:var(--brass);
+  }
+  .intro p{
+    font-size:16px;
+    line-height:1.6;
+    color:#d8cbb2;
+    margin:0 auto;
+    max-width:520px;
+  }
+
+  /* the cabinet */
+  .cabinet{
+    max-width:760px;
+    margin:0 auto;
+    background:linear-gradient(180deg, var(--wood-light), var(--wood-dark) 90%);
+    border:1px solid rgba(0,0,0,0.35);
+    border-radius:6px;
+    padding:22px;
+    box-shadow:
+      0 40px 70px -30px rgba(0,0,0,0.6),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+  .drawer{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:20px;
+    background:linear-gradient(180deg, #8a5b3f, #6a4229);
+    border:1px solid rgba(0,0,0,0.4);
+    border-radius:3px;
+    padding:22px 22px;
+    margin-bottom:14px;
+    cursor:pointer;
+    transition:transform 220ms ease, box-shadow 220ms ease;
+    box-shadow:
+      0 4px 0 rgba(0,0,0,0.25),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  .drawer:last-child{margin-bottom:0;}
+  .drawer:hover{
+    transform:translateX(6px);
+    box-shadow:
+      -6px 0 18px rgba(0,0,0,0.35),
+      0 4px 0 rgba(0,0,0,0.25),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  .drawer:focus-visible{
+    outline:2px solid var(--brass);
+    outline-offset:3px;
+  }
+  .drawer-pull{
+    flex:0 0 auto;
+    width:46px;
+    height:14px;
+    background:linear-gradient(180deg,#d9c08c,var(--brass));
+    border-radius:7px;
+    box-shadow:0 1px 2px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.4);
+  }
+  .drawer-label{
+    flex:1;
+    background:var(--cream);
+    border:1px solid rgba(0,0,0,0.25);
+    border-radius:2px;
+    padding:12px 16px;
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:12px;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,0.4);
+  }
+  .drawer-label .cat-name{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    font-weight:500;
+  }
+  .drawer-label .cat-count{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:#6d6352;
+    white-space:nowrap;
+  }
+  .drawer[data-cat="data"] .drawer-label{border-left:5px solid var(--gold);}
+  .drawer[data-cat="mental"] .drawer-label{border-left:5px solid var(--sage);}
+  .drawer[data-cat="digital"] .drawer-label{border-left:5px solid var(--oxblood);}
+
+  .cabinet-foot{
+    text-align:center;
+    margin-top:28px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:#a8987d;
+    letter-spacing:0.05em;
+  }
+
+  /* ============================================================
+     CATEGORY VIEW — the open drawer of cards
+     ============================================================ */
+  #view-category{
+    background:var(--cream);
+    padding:0 0 80px;
+  }
+  .cat-header{
+    background:linear-gradient(180deg, var(--wood-light), var(--wood-dark));
+    padding:40px 24px 46px;
+    text-align:center;
+    position:relative;
+  }
+  .back-link{
+    position:absolute;
+    top:22px;
+    left:24px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:var(--cream);
+    text-decoration:none;
+    border:1px solid rgba(239,230,211,0.4);
+    padding:8px 12px;
+    border-radius:3px;
+    background:rgba(0,0,0,0.15);
+    transition:background 160ms ease;
+  }
+  .back-link:hover{background:rgba(0,0,0,0.32);}
+  .cat-header .cat-tag{
+    display:inline-block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--ink);
+    background:var(--brass);
+    padding:5px 12px;
+    border-radius:2px;
+    margin-bottom:16px;
+  }
+  .cat-header h2{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:clamp(28px,5vw,42px);
+    color:#f7f1e3;
+    margin:0 0 10px;
+  }
+  .cat-header p{
+    color:#d8cbb2;
+    max-width:520px;
+    margin:0 auto;
+    font-size:15px;
+    line-height:1.6;
+  }
+
+  .card-rail{
+    max-width:1120px;
+    margin:-30px auto 0;
+    padding:0 24px;
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+    gap:22px;
+    position:relative;
+    z-index:2;
+  }
+
+  .card{
+    background:#fbf7ec;
+    border:1px solid #cbbd9d;
+    border-radius:2px;
+    padding:20px 18px 18px;
+    display:flex;
+    flex-direction:column;
+    text-decoration:none;
+    color:var(--ink);
+    position:relative;
+    min-height:230px;
+    box-shadow:0 10px 18px -12px rgba(43,29,15,0.35);
+    opacity:0;
+    transform:translateY(14px);
+    animation:cardIn 420ms ease forwards;
+  }
+  @keyframes cardIn{
+    to{opacity:1; transform:translateY(0);}
+  }
+  .card::before{
+    content:"";
+    position:absolute;
+    top:10px; left:50%;
+    transform:translateX(-50%);
+    width:10px; height:10px;
+    border-radius:50%;
+    background:var(--cream);
+    box-shadow:0 0 0 1px #b8a97e, inset 0 1px 2px rgba(0,0,0,0.25);
+  }
+  .card:hover{
+    box-shadow:0 16px 24px -14px rgba(43,29,15,0.45);
+    transform:translateY(-3px);
+  }
+  .card .call-number{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:0.06em;
+    color:#7c6e52;
+    margin:8px 0 12px;
+  }
+  .card .icon-swatch{
+    width:100%;
+    height:78px;
+    border-radius:2px;
+    margin-bottom:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--swatch-bg, #e7dcc2);
+  }
+  .card .icon-swatch svg{width:30px; height:30px; opacity:0.85;}
+  .card h3{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:17px;
+    line-height:1.3;
+    margin:0 0 8px;
+  }
+  .card p{
+    font-size:13.5px;
+    line-height:1.55;
+    color:#4b4238;
+    margin:0 0 16px;
+    flex:1;
+  }
+  .card .stamp{
+    align-self:flex-start;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    padding:6px 11px;
+    border:1.5px solid var(--oxblood);
+    color:var(--oxblood);
+    border-radius:2px;
+    transform:rotate(-2deg);
+    transition:background 160ms ease, color 160ms ease;
+  }
+  .card:hover .stamp{
+    background:var(--oxblood);
+    color:#fbf7ec;
+  }
+
+  /* category accent variants */
+  #view-category[data-cat="data"] .icon-swatch{ --swatch-bg:#ece0c2; }
+  #view-category[data-cat="data"] .stamp{border-color:var(--gold); color:var(--gold);}
+  #view-category[data-cat="data"] .card:hover .stamp{background:var(--gold); color:#fbf7ec;}
+
+  #view-category[data-cat="mental"] .icon-swatch{ --swatch-bg:#e3e6d9; }
+  #view-category[data-cat="mental"] .stamp{border-color:var(--sage); color:var(--sage);}
+  #view-category[data-cat="mental"] .card:hover .stamp{background:var(--sage); color:#f7f9f2;}
+
+  #view-category[data-cat="digital"] .icon-swatch{ --swatch-bg:#f0dcd8; }
+  #view-category[data-cat="digital"] .stamp{border-color:var(--oxblood); color:var(--oxblood);}
+  #view-category[data-cat="digital"] .card:hover .stamp{background:var(--oxblood); color:#fbf7ec;}
+
+  @media (max-width:520px){
+    .cabinet{padding:14px;}
+    .drawer{padding:16px;}
+    .drawer-pull{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HOME VIEW
+     ============================================================ -->
+<section id="view-home" class="view active">
+  <div class="intro">
+    <div class="eyebrow">Copywriting &amp; Storytelling</div>
+    <h1>Elsa Scott: <em>Creative</em> Portfolio, 2026</h1>
+    <p>I am a creative storyteller dedicated to translating complex ideas into engaging
+      narratives, with versatility that allows me to navigate diverse markets and audiences.
+      Pick a drawer to browse.</p>
+  </div>
+
+  <div class="cabinet" role="list">
+    <!-- drawers are rendered by JS from CATEGORIES -->
+  </div>
+
+  <div class="cabinet-foot">Click a drawer to open it</div>
+</section>
+
+<!-- ============================================================
+     CATEGORY VIEW
+     ============================================================ -->
+<section id="view-category" class="view">
+  <div class="cat-header">
+    <a href="#" class="back-link" id="back-link">&larr; Back to cabinet</a>
+    <div class="cat-tag" id="cat-tag">Drawer</div>
+    <h2 id="cat-title">Category</h2>
+    <p id="cat-desc">Category description.</p>
+  </div>
+  <div class="card-rail" id="card-rail">
+    <!-- cards rendered by JS -->
+  </div>
+</section>
+
+<script>
+  /* ============================================================
+     CONTENT — edit everything below to update the site
+     ============================================================ */
+
+  const CATEGORIES = {
+    data: {
+      name: "Data in Translation",
+      tag: "Drawer 01",
+      description: "White papers, blogs, ebooks, and press releases based on studies, surveys, data, and research.",
+    },
+    mental: {
+      name: "Incorporating Mental Health",
+      tag: "Drawer 02",
+      description: "Writing that incorporates clinical or personal subjects with broader goals — marketing, education, analysis, or connection.",
+    },
+    digital: {
+      name: "Digital and Client-Facing",
+      tag: "Drawer 03",
+      description: "Copy and content that connects a brand to its audience and nurtures those relationships.",
+    },
+  };
+
+  // icon shapes used as placeholder thumbnails — swap for real images any time
+  const ICONS = {
+    book: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 4.5C4 3.7 4.7 3 5.5 3H12v18H5.5c-.8 0-1.5-.7-1.5-1.5v-15Z"/><path d="M20 4.5c0-.8-.7-1.5-1.5-1.5H12v18h6.5c.8 0 1.5-.7 1.5-1.5v-15Z"/></svg>`,
+    doc: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"/><path d="M14 2v6h6" /><path d="M8 13h8M8 17h5"/></svg>`,
+    chart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 20V10M11 20V4M18 20v-7"/><path d="M2 20h20"/></svg>`,
+    press: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 7h13v11a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V7Z"/><path d="M16 7h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/><path d="M7 11h6M7 14h6M7 17h3"/></svg>`,
+    letter: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 6h18v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6Z"/><path d="m3 6 9 7 9-7"/></svg>`,
+    brain: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M9 3a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5.5V19a2 2 0 0 0 4 0V6a3 3 0 0 0-1-3Z"/><path d="M15 3a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5.5V19a2 2 0 0 1-4 0V6a3 3 0 0 1 1-3Z"/></svg>`,
+    leaf: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 21C5 12 12 5 21 5c0 9-7 16-16 16Z"/><path d="M5 21c2-6 6-10 12-12"/></svg>`,
+    plate: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>`,
+    feather: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20 4c-9 0-16 7-16 16 9 0 16-7 16-16Z"/><path d="M6 18 20 4"/></svg>`,
+    film: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M7 5v14M17 5v14M3 9h4M17 9h4M3 15h4M17 15h4"/></svg>`,
+    linkedin: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 10v7M7 7v.01M11 17v-4a2 2 0 0 1 4 0v4M11 13v4"/></svg>`,
+    tag: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="m3 11 8-8 9 9-8 8-9-9Z"/><circle cx="8" cy="8" r="1.2" fill="currentColor" stroke="none"/></svg>`,
+    mail: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>`,
+  };
+
+  // Replace each "url" with the real project link when ready.
+  // "callNumber" is just decorative flavor text (like a library call number).
+  // Optional: add an "image" field (e.g. image: "images/pricing-page.jpg") to any
+  // project to show a real thumbnail instead of the icon placeholder. Leave it
+  // out and the icon will keep showing.
+  const PROJECTS = {
+    data: [
+      {
+        title: "The Bees and Biodiversity Report",
+        callNumber: "BB.221 — EBOOK",
+        icon: "book",
+        descriptor: "A 50-page ebook summarizing a multi-year study into honey's genomic sequencing and its power as a biodiversity monitor.",
+        url: "https://bestbees.com/wp-content/uploads/2024/10/TheBeesAndBiodiverityReport_2024.pdf",
+      },
+      {
+        title: "Protecting Business Interests by Protecting the Planet",
+        callNumber: "TN.014 — WHITE PAPER",
+        icon: "doc",
+        descriptor: "Introducing the TNFD, the first sustainability reporting framework built for biodiversity and nature-related risk.",
+        url: "https://bestbees.com/wp-content/uploads/2024/08/ESL-White-Paper-TNFD-FINAL.pdf",
+      },
+      {
+        title: "The Case for More Flowers Instead of Less Honeybees",
+        callNumber: "FL.096 — BLOG",
+        icon: "chart",
+        descriptor: "A persuasive, data-backed rebuttal to a wave of anti-honeybee media coverage.",
+        url: "https://bestbees.com/misplaced-blame-on-honey-bees/",
+      },
+      {
+        title: "The AI Price War Is Here",
+        callNumber: "AI.309 — THOUGHT LEADERSHIP",
+        icon: "chart",
+        descriptor: "How AI labs' shift from chasing capability benchmarks to pursuing cost-effectiveness changes the calculus for enterprise governance.",
+        url: "https://medium.com/@elsa.scott_42408/the-ai-price-war-is-here-what-cheaper-models-mean-for-enterprise-ai-governance-3a45548e29bc",
+      },
+      {
+        title: "New Study Underscores Urgent Need for Flexible Childcare",
+        callNumber: "AF.087 — PRESS RELEASE",
+        icon: "press",
+        descriptor: "A press release announcing survey findings on culturally enriching childcare, linking out to the companion blog post and methodology PDF.",
+        url: "https://www.prnewswire.com/news-releases/new-study-underscores-urgent-need-for-flexible-culturally-enriching-childcare-for-american-families-302637094.html",
+      },
+    ],
+    mental: [
+      {
+        title: "If Only I Were a Boy: The Gender Gap in the Understanding of ADHD",
+        callNumber: "GH.140 — ARTICLE",
+        icon: "brain",
+        descriptor: "Research mixed with personal essay on the history and impact of gendered ADHD diagnosis criteria.",
+        url: "https://medium.com/@elsa_scott/if-only-i-were-a-boy-the-gender-gap-in-the-understanding-of-adhd-a69d3e85478e",
+      },
+      {
+        title: "Biophilia and Biophilic Design: 10 Tips and 4 Inspiring Examples",
+        callNumber: "BP.033 — BLOG",
+        icon: "leaf",
+        descriptor: "An SEO blog on biophilic design's impact on wellbeing, and how beehives fit in, aimed at real estate companies and office managers.",
+        url: "https://bestbees.com/biophilia-and-biophilic-design/",
+      },
+      {
+        title: "The Psychology Behind an Eating Disorder and Subsequent Recovery",
+        callNumber: "ED.077 — ARTICLE",
+        icon: "plate",
+        descriptor: "An educational psychology piece disguised as a personal essay, mapping psychological theories and coping strategies onto lived experience.",
+        url: "https://medium.com/@elsa_scott/the-psychology-behind-an-eating-disorder-and-subsequent-recovery-21914aa62bd1",
+      },
+      {
+        title: "Book Review: On the Calculation of Volume I by Solvej Balle",
+        callNumber: "BR.061 — REVIEW",
+        icon: "book",
+        descriptor: "A review tracing themes of mental health and philosophy through Balle's slow, spiraling novel.",
+        url: "https://medium.com/@elsa_scott/book-review-on-the-calculation-of-volume-i-solvej-balle-fd641fe2fd45",
+      },
+      {
+        title: "Poem: All These Fraying Edges",
+        callNumber: "PO.001 — POETRY",
+        icon: "feather",
+        descriptor: "A poem about the sunk cost fallacy trap that many fall into while struggling with mental health.",
+        url: "https://docs.google.com/document/d/e/2PACX-1vSvjnLvs1TKqESzg7i5O12pcef9bdIPWeqVLKuIwQSxIAsIV2WfpplhOyOUOH-_Z4enfCZOwLRrMMJc/pub",
+      },
+    ],
+    digital: [
+      {
+        title: "November Client-Only Newsletter",
+        callNumber: "NL.011 — NEWSLETTER",
+        icon: "mail",
+        descriptor: "Nurturing the relationship between brand and active client, coordinated across departments so every part of the company was represented.",
+        url: "https://b0feeb35-2391-4cc6-8733-1341de000ae8.filesusr.com/ugd/c07055_2b5782d30a524aaa8e127e3b7188c27b.pdf",
+      },
+      {
+        title: "Wes Anderson Trend: Beekeeping Reel",
+        callNumber: "RL.019 — SOCIAL",
+        icon: "film",
+        descriptor: "An Instagram reel riding a trending audio, coordinated, directed, and filmed start to finish.",
+        url: "https://www.instagram.com/reel/CrgNd8VvQVv/",
+      },
+      {
+        title: "LinkedIn Reaction to Fable 5 Release",
+        callNumber: "HK.402 — SOCIAL",
+        icon: "linkedin",
+        descriptor: "Using real AI industry news to draw attention to the need for Holokai's product.",
+        url: "https://www.linkedin.com/feed/update/urn:li:activity:7470219661305946115",
+      },
+      {
+        title: "Website Pricing Page",
+        callNumber: "PR.028 — WEB PAGE",
+        icon: "tag",
+        descriptor: "Outlined the content and wrote all copy for a dual-sided landing page, flipping between residential and commercial audiences.",
+        url: "https://bestbees.com/pricing/",
+      },
+      {
+        title: "Client Hive Visit Follow-Up Email",
+        callNumber: "HV.055 — EMAIL SERIES",
+        icon: "mail",
+        descriptor: "One of 50+ post-visit emails, distilling complex beekeeping methods into easy copy, and finding something fun to say after an uneventful visit.",
+        url: "https://docs.google.com/document/d/e/2PACX-1vTaeaJ2nzhHpsg8OjvKUyvINA6myphrU_QQ0inKq_uMuezBQlyX3Q8CAm7uXi95DLFd5hKvCHiAqWbN/pub",
+      },
+    ],
+  };
+
+  /* ============================================================
+     RENDERING — shouldn't need to touch this
+     ============================================================ */
+
+  const cabinet = document.querySelector(".cabinet");
+  Object.entries(CATEGORIES).forEach(([key, cat]) => {
+    const count = PROJECTS[key]?.length || 0;
+    const el = document.createElement("div");
+    el.className = "drawer";
+    el.dataset.cat = key;
+    el.setAttribute("role", "listitem");
+    el.setAttribute("tabindex", "0");
+    el.innerHTML = `
+      <div class="drawer-pull"></div>
+      <div class="drawer-label">
+        <span class="cat-name">${cat.name}</span>
+        <span class="cat-count">${count} piece${count === 1 ? "" : "s"}</span>
+      </div>
+    `;
+    el.addEventListener("click", () => openCategory(key));
+    el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openCategory(key); }
+    });
+    cabinet.appendChild(el);
+  });
+
+  function renderCard(project){
+    // To use a real image instead of the icon placeholder, replace the
+    // .icon-swatch div's innerHTML with: <img src="your-image.jpg" style="width:100%;height:100%;object-fit:cover;">
+    const a = document.createElement("a");
+    a.className = "card";
+    a.href = project.url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    const thumb = project.image
+      ? `<img src="${project.image}" alt="${project.title}" style="width:100%;height:100%;object-fit:cover;border-radius:2px;">`
+      : (ICONS[project.icon] || ICONS.doc);
+    a.innerHTML = `
+      <div class="icon-swatch">${thumb}</div>
+      <div class="call-number">${project.callNumber}</div>
+      <h3>${project.title}</h3>
+      <p>${project.descriptor}</p>
+      <span class="stamp">Open project &rarr;</span>
+    `;
+    return a;
+  }
+
+  function openCategory(key){
+    const cat = CATEGORIES[key];
+    const projects = PROJECTS[key] || [];
+
+    document.getElementById("cat-tag").textContent = cat.tag;
+    document.getElementById("cat-title").textContent = cat.name;
+    document.getElementById("cat-desc").innerHTML = cat.description;
+
+    const catView = document.getElementById("view-category");
+    catView.dataset.cat = key;
+
+    const rail = document.getElementById("card-rail");
+    rail.innerHTML = "";
+    projects.forEach((p, i) => {
+      const card = renderCard(p);
+      card.style.animationDelay = `${i * 60}ms`;
+      rail.appendChild(card);
+    });
+
+    document.getElementById("view-home").classList.remove("active");
+    catView.classList.add("active");
+    window.scrollTo(0, 0);
+    location.hash = key;
+  }
+
+  function goHome(){
+    document.getElementById("view-category").classList.remove("active");
+    document.getElementById("view-home").classList.add("active");
+    window.scrollTo(0, 0);
+    history.replaceState(null, "", location.pathname);
+  }
+
+  document.getElementById("back-link").addEventListener("click", (e) => {
+    e.preventDefault();
+    goHome();
+  });
+
+  // support deep-linking / browser back
+  window.addEventListener("hashchange", () => {
+    const key = location.hash.replace("#", "");
+    if (CATEGORIES[key]) openCategory(key);
+    else goHome();
+  });
+  if (location.hash && CATEGORIES[location.hash.replace("#", "")]) {
+    openCategory(location.hash.replace("#", ""));
+  }
+</script>
+</body>
+</html>
